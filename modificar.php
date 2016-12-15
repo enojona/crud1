@@ -1,49 +1,78 @@
 <?php
-	require('fpdf.php');
-	class MI_PDF extends FPDF { 
-		function Header()
-		{
-			$this->SetFont('Times','B',16);
-			$this->Cell(0,5,'INSTITUTO SUPERIOR TECNOLOGICO PRIVADO', 0, 0, 'C');
-			$this->Ln();
-			$this->SetFont('Times','B',12);
-			$this->Cell(0,5,'UNITEK PUNO', 1, 0, 'C');
-			$this->Ln();
-		}
-		
-		function Footer()
-		{
-			$this->SetY(-16);
-			$this->Cell(190, 5,'Pagina No '.$this->PageNo().' / {nb}','T',0,'R');
-			
-		}
-		function Body()
-		{
-			//Ancho 190
-			$this->SetFont('helvetica','B',12);
-		 	$this->Cell(0, 5, '1', 1, 0, 'C');
-		 	$this->Ln();
-			$this->SetFont('helvetica','',10);
-		 	$this->Cell(10, 5, '1', 1, 0, 'C');
-		 	$this->Cell(20, 5, 'Col 1', 1, 0, 'L');
-		 	$this->Cell(20, 5, 'Col2', 1, 0, 'L');
-		 	$this->Cell(80, 5, utf8_decode('Col 3'), 1, 0, 'L');
-		 	$this->Cell(60, 5, 'Col4', 1, 0, 'L');
-		 	$this->Ln();
-		 	$this->Ln();
-		 	$this->Ln();
-     include('inc/conexion.php');
-		 	$consulta=$conexion ->query('SELECT p.* FROM personas p');
-			   while ($fila=$consulta -> fetch_assoc()){
-		 	$this->cell(10,5,$fila['paterno'],0,0,'L');
-		 	$this->cell(10,5,$fila['materno'],0,0,'L');
-		 	$this->Ln();
-		 	}
-		}
-	}
-	$ejemplo = new MI_PDF('P','mm','A4');
-	$ejemplo->aliasNbPages();
-	$ejemplo->AddPage();
-	$ejemplo->Body();
-	$ejemplo->Output();
+	include('inc/cabecera.php');
+	include('inc/menu.php');
+	include('inc/conexion.php');
+	$sql="SELECT * FROM personas WHERE persona_id={$_GET['id']}";
+	$resultado=$conexion->query($sql);
+	$fila=$resultado->fetch_assoc();
+	print_r ($fila);
+?>
+
+<div class="container">
+
+	<div class="row">
+		<div class="col-md-8">
+
+			<h1>Modificar Persona</h1>
+			<form class="form-horizontal" method="post" action="modificar-recibe.php">
+				<input type="hidden" class="form-control" name="txt-id" id="txt-id" placeholder="Editar su Apellido Paterno" value="<?php echo $fila['persona_id'];?>">
+
+				<div class="form-group">
+					<label for="txt-paterno" class="col-md-2 control-label">Paterno:</label>
+					<div class="col-md-2">
+						<input type="text" class="form-control" name="txt-paterno" id="txt-paterno" placeholder="Editar su Apellido Paterno" value="<?php echo $fila['paterno'];?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="txt-materno" class="col-md-2 control-label">Materno:</label>
+					<div class="col-md-2">
+						<input type="text" class="form-control" name="txt-materno" id="txt-materno" placeholder="Editar su Apellido Materno" value="<?php echo $fila['materno'];?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="txt-nombres" class="col-md-2 control-label">Nombres:</label>
+					<div class="col-md-2">
+						<input type="text" class="form-control" name="txt-nombres" id="txt-nombres" placeholder="Editar su Nombre" value="<?php echo $fila['nombres'];?>">
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-md-2 col-md-offset-2">
+						<input type="submit" class="btn" name="submit-nuevo" value="Cambiar">
+					</div>
+				</div>
+				<table class="table">
+						
+					<tr>
+						<th>id</th>
+						<th>Apellidos y Nombrea</th>
+						<th>Fecha Creacion</th>
+						<th></th>
+					<tr>
+					<?php 
+						$consulta=$conexion->query('SELECT p.* FROM personas p');
+						while ($fila=$consulta->fetch_assoc()){
+						?>
+							<tr>
+								<td><?php echo $fila['persona_id'];?></td>
+								<td><?php echo $fila['paterno'].' '.$fila['materno'].' '.$fila['nombres'];?></td>
+								<td><?php echo $fila['fecha_registro'];?></td>
+								<td></td>
+						<?php
+							}
+						?>
+				</table>
+			</form>
+		</div>
+		<div class="col-md-4">
+			<div class="alert alert-success">
+				<strong>Bienvenidos</strong> al CRUD Personas.
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<?php
+	include('inc/scripts.php');
+	include('inc/pie.php');
 ?>
